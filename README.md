@@ -71,6 +71,8 @@ After training, `visualize_runs.py` can be used for plotting. To automatically p
 python3 run_experiments.py main_results --plot
 ```
 
+After running experiments, you can visualize the results (e.g., rewards, losses) using **TensorBoard**.
+
 To measure the different types of gradient decay for different aggregators in the SplAgger analysis, you can use `visualize_analysis.py`. The plot will be saved as `hyper/data/analysis.png` by default. (Currently set up for CPU usage.)
 
 *Example usage:*
@@ -88,3 +90,29 @@ To measure the different types of gradient decay for different aggregators in th
 The dockerfiles can be built automatically with `run_experiments.py`, or manually with, e.g., `bash build.sh Dockerfile_mj150`.
 - To recreate SplAgger experiments, use the environments in `all_envs.py` and models in `models.py`, but note that you need to additionally set "latent_dim": 12 and "full_transitions": True, in "shared_arguments", if not done already. Additionally, setting "policy_entropy_coef": 0.0, on PlanningGame, is done for you and is very important!
 - `requirements.txt` is legacy from VariBAD, and likely out of date.
+
+### Prerequisites (Himchan)
+
+Before running this project, make sure the following tools are installed and configured:
+
+---
+
+#### 1. Install Docker
+
+Install Docker by following the official guide:  
+👉 [Docker Installation Guide](https://docs.docker.com/engine/install/)
+
+After installation, you must give your user permission to run Docker to run the code without error:
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+Note: You may need to log out and log back in (or reload terminal) for this change to take effect.
+
+#### 2. Enable GPU Support
+To run Docker containers with GPU support, you must install the NVIDIA Container Toolkit:
+👉 [NVIDIA Container Toolkit Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+
+This allows Docker to access your GPU using the `--gpus all` option in docker run.
+

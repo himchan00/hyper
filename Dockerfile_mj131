@@ -18,8 +18,18 @@ RUN wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.s
 
 ENV PATH /home/user/miniconda3/bin:$PATH
 
+RUN conda config --set always_yes true && \
+    conda config --set report_errors false && \
+    conda config --set channel_priority strict && \
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+
 # Python packages
-RUN conda install python=3.8.5
+# RUN conda install python=3.8.5
+RUN conda create -y -n myenv python=3.8.5 && \
+    conda clean -afy
+
+SHELL ["conda", "run", "-n", "myenv", "/bin/bash", "-c"]
 # RUN conda install pytorch==1.4 torchvision tensorboard==2.0.0 cudatoolkit=10.1 seaborn snakeviz matplotlib -c pytorch
 RUN conda install pytorch==1.7.0 torchvision tensorboard==2.0.0 cudatoolkit=11.0 seaborn snakeviz matplotlib -c pytorch
 RUN pip install 'cython<3' tensorboardX gym==0.9.1 psutil dataclasses akro click dowel cloudpickle numpy==1.23.4

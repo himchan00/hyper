@@ -11,11 +11,11 @@ if hash nvidia-docker 2>/dev/null; then
             --net host \
             -v ${SCRIPT_DIR}:${SCRIPT_DIR} \
         ${USER}/${dockerfile} \
-        $@
+        conda run -n myenv "$@"
 else
     docker run -ti --rm \
         --net host \
         -v ${SCRIPT_DIR}:${SCRIPT_DIR} \
         ${USER}/${dockerfile} \
-        $@
+        conda run -n myenv "$@"
 fi
