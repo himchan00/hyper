@@ -500,6 +500,12 @@ register(
 )
 
 register(
+    'Grid10-60-v0',
+    entry_point='environments.navigation.gridworld:GridNavi',
+    kwargs={'num_cells': 10, 'num_steps': 60},
+)
+
+register(
     'Grid7-15-mid-v0',
     entry_point='environments.navigation.gridworld:GridNavi',
     kwargs={'num_cells': 7, 'num_steps': 15, 'starting_state':(3.0, 3.0)},

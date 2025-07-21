@@ -512,7 +512,8 @@ def plot_bb(env, args, episode_all_obs, episode_goals, reward_decoder,
     Plot behaviour and belief.
     """
 
-    only_plot_last_step = env._max_episode_steps > 30 
+    # only_plot_last_step = env._max_episode_steps > 30 
+    only_plot_last_step = False  # Always plot all steps for gridworld
 
     plt.figure(figsize=(1.5 * env._max_episode_steps, 1.5 * args.max_rollouts_per_task))
 

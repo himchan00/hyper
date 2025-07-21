@@ -91,7 +91,9 @@ The dockerfiles can be built automatically with `run_experiments.py`, or manuall
 - To recreate SplAgger experiments, use the environments in `all_envs.py` and models in `models.py`, but note that you need to additionally set "latent_dim": 12 and "full_transitions": True, in "shared_arguments", if not done already. Additionally, setting "policy_entropy_coef": 0.0, on PlanningGame, is done for you and is very important!
 - `requirements.txt` is legacy from VariBAD, and likely out of date.
 
-### Prerequisites (Himchan)
+## Updated ReadME (Himchan)
+
+### Prerequisites
 
 Before running this project, make sure the following tools are installed and configured:
 
@@ -110,9 +112,29 @@ sudo usermod -aG docker $USER
 
 Note: You may need to log out and log back in (or reload terminal) for this change to take effect.
 
-#### 2. Enable GPU Support
+#### 2. Install NVIDIA Container Toolkit 
 To run Docker containers with GPU support, you must install the NVIDIA Container Toolkit:
 👉 [NVIDIA Container Toolkit Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 
 This allows Docker to access your GPU using the `--gpus all` option in docker run.
 
+
+### Run Simple Experiments Using `run.py`
+
+The original `run_experiments.py` script is useful for running many experiments in parallel. However, it is less convenient for running a small number of experiments or for debugging, as its structure is complex and training-time `print` outputs are not shown directly in the terminal.
+
+To address this, we provide `run.py`, a simpler alternative designed for ease of debugging. It has a much cleaner codebase and displays all `print` outputs during training directly in the terminal. Unlike `run_experiments.py`, experiments are run **sequentially** (not in parallel).
+
+If you are running large-scale experiments (e.g., hyperparameter sweeps), stick with `run_experiments.py`. Otherwise, for simple runs or quick debugging, `run.py` is recommended.
+
+To run the `main_results` experiment using GPU 0:
+
+```
+python3 run.py main_results --device 0
+```
+
+To run a grid world experiment:
+
+```
+python3 run.py grid_world_exp --device 0
+```
