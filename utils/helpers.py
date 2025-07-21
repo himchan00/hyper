@@ -14,32 +14,6 @@ from torch.nn import functional as F
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-# def save_models(args, logger, policy, vae, envs, iter_idx):
-#     # TODO: save parameters, not entire model
-#
-#     save_path = os.path.join(logger.full_output_folder, 'models')
-#     if not os.path.exists(save_path):
-#         os.mkdir(save_path)
-#     try:
-#         torch.save(policy.actor_critic, os.path.join(save_path, "policy{0}.pt".format(iter_idx)))
-#     except AttributeError:
-#         torch.save(policy.policy, os.path.join(save_path, "policy{0}.pt".format(iter_idx)))
-#     torch.save(vae.encoder, os.path.join(save_path, "encoder{0}.pt".format(iter_idx)))
-#     if vae.state_decoder is not None:
-#         torch.save(vae.state_decoder, os.path.join(save_path, "state_decoder{0}.pt".format(iter_idx)))
-#     if vae.reward_decoder is not None:
-#         torch.save(vae.reward_decoder,
-#                    os.path.join(save_path, "reward_decoder{0}.pt".format(iter_idx)))
-#     if vae.task_decoder is not None:
-#         torch.save(vae.task_decoder, os.path.join(save_path, "task_decoder{0}.pt".format(iter_idx)))
-#
-#     # save normalisation params of envs
-#     if args.norm_rew_for_policy:
-#         rew_rms = envs.venv.ret_rms
-#         save_obj(rew_rms, save_path, "env_rew_rms{0}.pkl".format(iter_idx))
-#     if args.norm_obs_for_policy:
-#         obs_rms = envs.venv.obs_rms
-#         save_obj(obs_rms, save_path, "env_obs_rms{0}.pkl".format(iter_idx))
 
 def make_env(args, mode='train', train_task_override=None, **kwargs):
     env_id = args.env_name
@@ -273,6 +247,9 @@ def recompute_embeddings(
     for i in range(policy_storage.actions.shape[0]):
         # reset hidden state of the GRU when we reset the task
         h = encoder.reset_hidden(h, policy_storage.done[i + 1])
+        # detach the hidden state every detach_every steps
+        if detach_every and (i%detach_every==0) and i!=0:
+            h = h.detach()
 
         ts, tm, tl, h = encoder(policy_storage.actions.float()[i:i + 1],
                                 policy_storage.next_state[i:i + 1],
@@ -281,7 +258,6 @@ def recompute_embeddings(
                                 h,
                                 sample=sample,
                                 return_prior=False,
-                                detach_every=detach_every
                                 )
 
         latent_sample.append(ts)

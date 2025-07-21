@@ -12,4 +12,7 @@ docker run -ti --rm --cpuset-cpus "$cpuset"\
         --net host \
         -v ${SCRIPT_DIR}:${SCRIPT_DIR} \
         ${USER}/${dockerfile} \
-        conda run -n myenv "$@"
+        bash -c '
+                source activate myenv
+                exec "$@"
+        ' bash "$@"

@@ -11,7 +11,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class TBLogger:
     def __init__(self, args, exp_label):
-        self.output_name = exp_label + '_' + str(args.seed) + '_' + datetime.datetime.now().strftime('_%d:%m_%H:%M:%S') + '_' + hex(random.Random().randint(0,1e6)).replace("0x","")
+        self.output_name = exp_label
         try:
             log_dir = args.results_log_dir
         except AttributeError:
@@ -36,10 +36,10 @@ class TBLogger:
                 os.mkdir(dir_path)
 
         try:
-            self.full_output_folder = os.path.join(os.path.join(dir_path, 'logs_{}'.format(args.env_name)),
+            self.full_output_folder = os.path.join(os.path.join(dir_path, '{}'.format(args.env_name)),
                                                    self.output_name)
         except:
-            self.full_output_folder = os.path.join(os.path.join(dir_path, 'logs_{}'.format(args["env_name"])),
+            self.full_output_folder = os.path.join(os.path.join(dir_path, '{}'.format(args["env_name"])),
                                                    self.output_name)
 
         self.writer = SummaryWriter(log_dir=self.full_output_folder)

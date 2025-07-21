@@ -77,7 +77,7 @@ class RNNEncoder(nn.Module):
             assert len(hidden_state.shape) == 3, hidden_state.shape
             batch_size = hidden_state.shape[1]
             reset_state = self.agg.init_state(batch_size)
-        hidden_state = hidden_state*(1 - done) + reset_state*(done)
+        hidden_state = hidden_state*(1 - done) + reset_state*(done) # resetting hidden state where done is True (This detaches the hidden state from the graph)
         return hidden_state
 
     def prior(self, batch_size, sample=True):
@@ -105,17 +105,16 @@ class RNNEncoder(nn.Module):
         If not return_all_hidden, just return final hidden state
         """
 
-        # shape should be: sequence_len x batch_size x hidden_size
-        actions = actions.reshape((-1, *actions.shape[-2:]))
-        states = states.reshape((-1, *states.shape[-2:]))
-        prev_states = prev_states.reshape((-1, *prev_states.shape[-2:])).to(device)
-        rewards = rewards.reshape((-1, *rewards.shape[-2:]))
+        actions = actions.reshape((-1, *actions.shape[-2:])) # reshape to sequence_len x batch_size x action_dim
+        states = states.reshape((-1, *states.shape[-2:])) # reshape to sequence_len x batch_size x state_dim
+        prev_states = prev_states.reshape((-1, *prev_states.shape[-2:])).to(device) # reshape to sequence_len x batch_size x state_dim
+        rewards = rewards.reshape((-1, *rewards.shape[-2:])) # reshape to sequence_len x batch_size x reward_dim
         if hidden_state is None:
             assert return_prior
         else:
             assert hidden_state.shape[-1] == self.agg.state_size, (hidden_state.shape, self.agg.state_size, self.agg.enc_state_size)
             # if the sequence_len is one, this will add a dimension at dim 0 (otherwise will be the same)
-            hidden_state = hidden_state.reshape((-1, *hidden_state.shape[-2:]))
+            hidden_state = hidden_state.reshape((-1, *hidden_state.shape[-2:])) # reshape to sequence_len x batch_size x hidden_size
 
         if return_prior:
             # if hidden state is none, start with the prior
@@ -129,9 +128,7 @@ class RNNEncoder(nn.Module):
         hr = self.reward_encoder(rewards)
         hs_next = self.state_encoder(states) # these are next states, after actions and rewards
         hs_prev = self.state_encoder(prev_states) # these are previous states, before actions and rewards
-        # print("ha", ha)
-        # print("hr", hr)
-        # print("hs", hs_next)
+
         if self.args.full_transitions:
             h = torch.cat((hs_prev, ha, hr, hs_next), dim=2)
         else:

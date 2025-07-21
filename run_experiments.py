@@ -62,8 +62,10 @@ def get_cmds(args, experiment_sets):
                 arg_dict.update(experiment) # this will override any shared params
                 # add this combination to the args dict. Will overwrite prior two.
                 named_search_params = {list(experiment_set["search_arguments"].keys())[i] : param_value for i, param_value in enumerate(search_param_setting)}
+                exp_label = "_".join([str(k) + "_" + str(v) for k, v in named_search_params.items()])
                 arg_dict.update(named_search_params)
                 arg_dict.update({"results_log_dir": log_dir})
+                arg_dict.update({"exp_label": exp_label})
                 cmd = []
                 for key, value in sorted(list(arg_dict.items())):
                     cmd.append("--"+key)
@@ -83,18 +85,12 @@ def is_match(exper_dict_1, exper_dict_2, override_logdir_1=None, override_logdir
             os.path.basename(os.path.normpath(logdir2))) \
         and (exper_dict_1["env_name"] == exper_dict_2["env_name"]) \
         and (exper_dict_1["exp_label"] == exper_dict_2["exp_label"]) \
-        and (exper_dict_1["seed"] == exper_dict_2["seed"]) \
-        and (exper_dict_1["lr_vae"] == exper_dict_2["lr_vae"]) \
-        and (exper_dict_1["lr_policy"] == exper_dict_2["lr_policy"]) 
 
 def pretty_str(arg_dict):
-    return "{} {} {}; lr_v {}; lr_p {}; seed {}".format(
+    return "{} {} {}; ".format(
                 arg_dict["env_name"],
                 arg_dict["exp_label"],
                 os.path.basename(os.path.normpath(arg_dict["results_log_dir"])),
-                arg_dict["lr_vae"],
-                arg_dict["lr_policy"],
-                arg_dict["seed"],
                 )
 
 def filter_prior_success(cmds_lists, cmdStr_2_argDict, args, unmatched_warning=False, quiet=False):
